@@ -12,7 +12,6 @@ from app.server.routes.chatbot.chatbot import router as Chat
 
 app = FastAPI()
 
-# 
 '''Deleting upload and generated filed for project documention POC'''
 @app.on_event("shutdown")
 def shutdown_event():
