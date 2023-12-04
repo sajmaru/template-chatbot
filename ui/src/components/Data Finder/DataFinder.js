@@ -21,20 +21,21 @@ function DataFinder() {
     const [authToken] = useState(localStorage.getItem("AUTH_TOKEN"));
     const [alert, setAlert] = React.useState(authToken == null ? true : false);
 
-    if (!authToken) {
-        useGoogleOneTapLogin({
-            onSuccess: credentialResponse => {
+    useGoogleOneTapLogin({
+        onSuccess: credentialResponse => {
+            if (!authToken) {
                 localStorage.setItem("AUTH_TOKEN", credentialResponse.credential);
                 setOpen(false);
                 setAlert(false);
-            },
-            onError: () => {
-                console.log('Login Failed');
-                setOpen(false);
-            },
-            cancel_on_tap_outside: false
-        });
-    }
+            }
+        },
+        onError: () => {
+            console.log('Login Failed');
+            setOpen(false);
+        },
+        cancel_on_tap_outside: false
+    });
+
 
     const currentMessage = useMemo(() => {
         return { content: currentChat ?? "", role: "assistant" };
