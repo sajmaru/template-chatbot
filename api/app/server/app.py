@@ -38,4 +38,4 @@ app.add_middleware(
 
 
 # Creating endpoints
-app.include_router(Chat, tags=["Chat"], prefix="/apis/chat")
+app.include_router(Chat, tags=["Chat"], prefix="/template-chatbot-api")
