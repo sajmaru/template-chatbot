@@ -16,7 +16,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
         children: [
               {
-                path: "/data_finder",
+                path: "/template-chatbot",
                 element: <DataFinder />,
               }
         ]

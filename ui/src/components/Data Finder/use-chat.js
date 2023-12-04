@@ -9,7 +9,7 @@ export function useChat() {
 
     const abortController = useMemo(() => new AbortController(), []);
     // const API_URL = BASE_URL + "data_finder/";
-    const API_URL = BASE_URL + "data_finder/";
+    const API_URL = BASE_URL + "template-chatbot-api/";
     console.log(BASE_URL);
     
     function cancel() {
@@ -40,8 +40,8 @@ export function useChat() {
             method: "post",
             headers: {
                 "Content-Type": "application/json",
-                Authorization:
-                    "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjY3NmRhOWQzMTJjMzlhNDI5OTMyZjU0M2U2YzFiNmU2NTEyZTQ5ODMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNjE4MTA0NzA4MDU0LTlyOXMxYzRhbGczNmVybGl1Y2hvOXQ1Mm4zMm42ZGdxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNjE4MTA0NzA4MDU0LTlyOXMxYzRhbGczNmVybGl1Y2hvOXQ1Mm4zMm42ZGdxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTEwOTM2MzI5NzE4MjgyMDUwMTI4IiwiaGQiOiJ1cHMuY29tIiwiZW1haWwiOiJzYWpiaGF2ZXNobWFydUB1cHMuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJ0VUFyY1U2M2F3SWY1UHV6SGkta3ZBIiwibmJmIjoxNjg5NzA0MDA3LCJpYXQiOjE2ODk3MDQzMDcsImV4cCI6MTY4OTcwNzkwNywianRpIjoiOGU0NWI1MWNjN2Y5ZTM5Zjc3OWI4MjQzNzhkMzdjMzk2ZTM1MGRmZCJ9.Dv0RpELlYzlIW3wcAzRaSQJMVTHyyC_iOgoENYqJBnfAFdwMwnzlWVjKMfSSeYSL6qhfwha0EcRN65qAgPDVLgP8wL8u4q3vcVzb0m5jb8BQJaZ-OHWBCgVVWRLU_UZqWG0puZP2ZCWd4QR4AIkqxwaCLH-if5igss2YcdkmMnJnPydH5nxslqbmthc3AImhPxuskTIn5pYMkKdAQ--1xa0H9o6jQCsO5NuhZeJU0mUlzaAB99oWFV5z8rV74TmsYOIzy_A2LMNuB2_WVtGypl2OGF_QfxxR4LwheHt7KB-688Ji6p6X6Ri35Do8OxQ_v5ssyZa3EK-kovAhCOIPnQ",
+                "Authorization": `Bearer ${localStorage.getItem("AUTH_TOKEN")}`
+
             },
             // referrerPolicy: 'no-referrer-when-downgrade',
             body: JSON.stringify({
@@ -49,8 +49,11 @@ export function useChat() {
                 new_chat: newChat,
             }),
         })
-            .then((response) => response.json())
-            .then((data) => {
+        .then(async (response) => {
+            // Check for HTTP response status
+            if (response.status === 200) {
+                // Parse the JSON response and proceed with the existing logic
+                let data = await response.json();
                 setChatHistory((curr) => [
                     ...curr,
                     { role: "assistant", content: data.data },
@@ -58,10 +61,21 @@ export function useChat() {
                 setNewChat("false");
                 setCurrentChat(null);
                 setState("idle");
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+            } else if (response.status === 401) {
+                // Handle the 401 Unauthorized case
+                localStorage.removeItem("AUTH_TOKEN");
+                window.location.reload(false);
+            } else {
+                // Handle other HTTP status codes if necessary
+                throw new Error(`HTTP error: Status code ${response.status}`);
+            }
+        })
+        .catch((error) => {
+            // Handle any errors that occurred during the fetch or the processing
+            console.log(error);
+            window.alert(`${error.message} An error occurred while trying to search ${searchTerm}, please report this and try another query`);
+        });
+        
     };
 
     return { sendMessage, currentChat, chatHistory, cancel, clear, state };

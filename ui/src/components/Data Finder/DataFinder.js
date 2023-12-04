@@ -5,11 +5,35 @@ import { appConfig } from "../../config.browser";
 import { Welcome } from "../Welcome";
 import './DataFinder.css';
 import Button from '@mui/material/Button';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+
+import { useGoogleOneTapLogin, GoogleLogin } from '@react-oauth/google';
+
 
 function DataFinder() {
-    const [message, setMessage] = useState("");
-
     const { currentChat, chatHistory, sendMessage, state, clear } = useChat();
+    const [message, setMessage] = useState("");
+    const [open, setOpen] = React.useState(false);
+    const [authToken] = useState(localStorage.getItem("AUTH_TOKEN"));
+    const [alert, setAlert] = React.useState(authToken == null ? true : false);
+    
+    if (!authToken) {
+        useGoogleOneTapLogin({
+            onSuccess: credentialResponse => {
+                localStorage.setItem("AUTH_TOKEN", credentialResponse.credential);
+                setOpen(false);
+                setAlert(false);
+            },
+            onError: () => {
+                console.log('Login Failed');
+                setOpen(false);
+            },
+            cancel_on_tap_outside: false
+        });
+    }
 
     const currentMessage = useMemo(() => {
         return { content: currentChat ?? "", role: "assistant" };
@@ -110,6 +134,35 @@ function DataFinder() {
                     ) : null}
                 </form>
             </section>
+            <div style={{ flexGrow: 1, float: 'right', display: 'contents' }}>
+                    <GoogleLogin
+                        onSuccess={credentialResponse => {
+                            localStorage.setItem("AUTH_TOKEN", credentialResponse.credential);
+                            setOpen(false);
+                            setAlert(false);
+                        }}
+                        onError={() => {
+                            console.log('Login Failed');
+                            setOpen(false);
+                        }}
+                        width='200'
+                    />
+                </div>
+                <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={open}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            <Snackbar
+                sx={{ width: '15%' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                open={alert}
+            >
+                <Alert severity="error" sx={{ width: '100%' }} variant="filled" >
+                    Please Sign In!
+                </Alert>
+            </Snackbar>
         </main>
     );
 }

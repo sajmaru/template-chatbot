@@ -21,7 +21,7 @@ export default function SideBar() {
                     <ul>
                         <li>
                             <NavLink
-                                to={`/data_finder`}
+                                to={`/template-chatbot`}
                                 className={({ isActive, isPending }) =>
                                     isActive
                                         ? "active"
