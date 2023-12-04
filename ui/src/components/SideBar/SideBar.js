@@ -30,7 +30,7 @@ export default function SideBar() {
                                             : ""
                                 }
                             >
-                                Data Finder
+                                Template Chatbot
                             </NavLink>
                         </li>
                     </ul>

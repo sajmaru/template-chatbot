@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useChat } from "./use-chat";
 import { ChatMessage } from "./ChatMessage";
@@ -19,7 +20,7 @@ function DataFinder() {
     const [open, setOpen] = React.useState(false);
     const [authToken] = useState(localStorage.getItem("AUTH_TOKEN"));
     const [alert, setAlert] = React.useState(authToken == null ? true : false);
-    
+
     if (!authToken) {
         useGoogleOneTapLogin({
             onSuccess: credentialResponse => {
@@ -60,9 +61,23 @@ function DataFinder() {
 
     return (
         <main className="bg-white p-6 w-full h-full flex flex-col">
+            <div style={{ flexGrow: 1, float: 'right', display: 'contents' }}>
+                <GoogleLogin
+                    onSuccess={credentialResponse => {
+                        localStorage.setItem("AUTH_TOKEN", credentialResponse.credential);
+                        setOpen(false);
+                        setAlert(false);
+                    }}
+                    onError={() => {
+                        console.log('Login Failed');
+                        setOpen(false);
+                    }}
+                    width='200'
+                />
+            </div>
             <section className="overflow-y-auto flex-grow mb-4 pb-8">
                 <div className="flex flex-col space-y-4">
-                    <Welcome title=" 🔍Data Finder" text = "DataFinder is an application leveraging Language Model technology to efficiently search and identify relevant tables from the datawarehouse, enabling users to easily locate and access the desired data for their projects."/>
+                    <Welcome title=" 🔍Data Finder" text="DataFinder is an application leveraging Language Model technology to efficiently search and identify relevant tables from the datawarehouse, enabling users to easily locate and access the desired data for their projects." />
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {appConfig.dataFinderSamplePhrases.map((phrase) => (
                             <button
@@ -134,21 +149,8 @@ function DataFinder() {
                     ) : null}
                 </form>
             </section>
-            <div style={{ flexGrow: 1, float: 'right', display: 'contents' }}>
-                    <GoogleLogin
-                        onSuccess={credentialResponse => {
-                            localStorage.setItem("AUTH_TOKEN", credentialResponse.credential);
-                            setOpen(false);
-                            setAlert(false);
-                        }}
-                        onError={() => {
-                            console.log('Login Failed');
-                            setOpen(false);
-                        }}
-                        width='200'
-                    />
-                </div>
-                <Backdrop
+
+            <Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={open}
             >

@@ -73,7 +73,7 @@ export function useChat() {
         .catch((error) => {
             // Handle any errors that occurred during the fetch or the processing
             console.log(error);
-            window.alert(`${error.message} An error occurred while trying to search ${searchTerm}, please report this and try another query`);
+            window.alert(`${error.message} An error occurred`);
         });
         
     };
