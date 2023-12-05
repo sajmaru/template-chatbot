@@ -11,7 +11,6 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const router = createBrowserRouter([
     {
-        path: "/template-chatbot",
         element: <SideBar />,
         errorElement: <ErrorPage />,
         children: [
