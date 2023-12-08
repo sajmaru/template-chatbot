@@ -12,7 +12,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
 import { useGoogleOneTapLogin, GoogleLogin } from '@react-oauth/google';
-
+// 
 
 function DataFinder() {
     const { currentChat, chatHistory, sendMessage, state, clear } = useChat();
@@ -94,7 +94,7 @@ function DataFinder() {
                         <ChatMessage key={i} message={chat} />
                     ))}
 
-
+   
                     {currentChat ? <ChatMessage message={currentMessage} /> : null}
                 </div>
 
